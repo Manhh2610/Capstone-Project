@@ -1,0 +1,203 @@
+{
+  "building": {
+    "name": "Tòa nhà BIM Demo",
+    "floors": 2,
+    "description": "Tòa nhà mô phỏng gồm 2 tầng với các phòng, hành lang, thang bộ và thang máy"
+  },
+  "nodes": [
+    {
+      "id": "entrance",
+      "name": "Lối vào chính",
+      "type": "entrance",
+      "floor": 0,
+      "coordinates": {"x": 0, "y": 0},
+      "aliases": ["cửa chính", "lối vào", "entrance"]
+    },
+    {
+      "id": "lobby_f0",
+      "name": "Sảnh tầng trệt",
+      "type": "lobby",
+      "floor": 0,
+      "coordinates": {"x": 5, "y": 0},
+      "aliases": ["sảnh", "reception", "lễ tân"]
+    },
+    {
+      "id": "corridor_f0_a",
+      "name": "Hành lang A - Tầng trệt",
+      "type": "corridor",
+      "floor": 0,
+      "coordinates": {"x": 5, "y": 10},
+      "aliases": ["hành lang a tầng 1"]
+    },
+    {
+      "id": "corridor_f0_b",
+      "name": "Hành lang B - Tầng trệt",
+      "type": "corridor",
+      "floor": 0,
+      "coordinates": {"x": 20, "y": 10},
+      "aliases": ["hành lang b tầng 1"]
+    },
+    {
+      "id": "room_101",
+      "name": "Phòng 101",
+      "type": "room",
+      "floor": 0,
+      "coordinates": {"x": 0, "y": 20},
+      "aliases": ["phòng 101", "101"]
+    },
+    {
+      "id": "room_102",
+      "name": "Phòng 102",
+      "type": "room",
+      "floor": 0,
+      "coordinates": {"x": 10, "y": 20},
+      "aliases": ["phòng 102", "102"]
+    },
+    {
+      "id": "room_103",
+      "name": "Phòng 103",
+      "type": "room",
+      "floor": 0,
+      "coordinates": {"x": 20, "y": 20},
+      "aliases": ["phòng 103", "103"]
+    },
+    {
+      "id": "room_104",
+      "name": "Phòng họp 104",
+      "type": "meeting_room",
+      "floor": 0,
+      "coordinates": {"x": 30, "y": 20},
+      "aliases": ["phòng họp", "phòng 104", "104", "meeting room"]
+    },
+    {
+      "id": "toilet_f0",
+      "name": "Nhà vệ sinh tầng trệt",
+      "type": "toilet",
+      "floor": 0,
+      "coordinates": {"x": 30, "y": 10},
+      "aliases": ["wc tầng 1", "toilet tầng 1", "nhà vệ sinh tầng 1", "vệ sinh"]
+    },
+    {
+      "id": "staircase",
+      "name": "Cầu thang bộ",
+      "type": "staircase",
+      "floor": 0,
+      "coordinates": {"x": 15, "y": 0},
+      "aliases": ["cầu thang", "thang bộ", "thang"]
+    },
+    {
+      "id": "elevator",
+      "name": "Thang máy",
+      "type": "elevator",
+      "floor": 0,
+      "coordinates": {"x": 18, "y": 0},
+      "aliases": ["thang máy", "elevator", "lift"]
+    },
+    {
+      "id": "staircase_f1",
+      "name": "Cầu thang bộ - Tầng 1",
+      "type": "staircase",
+      "floor": 1,
+      "coordinates": {"x": 15, "y": 0},
+      "aliases": ["cầu thang tầng 2", "thang bộ tầng 2"]
+    },
+    {
+      "id": "elevator_f1",
+      "name": "Thang máy - Tầng 1",
+      "type": "elevator",
+      "floor": 1,
+      "coordinates": {"x": 18, "y": 0},
+      "aliases": ["thang máy tầng 2", "elevator tầng 2"]
+    },
+    {
+      "id": "lobby_f1",
+      "name": "Sảnh tầng 1",
+      "type": "lobby",
+      "floor": 1,
+      "coordinates": {"x": 15, "y": 5},
+      "aliases": ["sảnh tầng 2"]
+    },
+    {
+      "id": "corridor_f1_a",
+      "name": "Hành lang A - Tầng 1",
+      "type": "corridor",
+      "floor": 1,
+      "coordinates": {"x": 5, "y": 10},
+      "aliases": ["hành lang a tầng 2"]
+    },
+    {
+      "id": "corridor_f1_b",
+      "name": "Hành lang B - Tầng 1",
+      "type": "corridor",
+      "floor": 1,
+      "coordinates": {"x": 20, "y": 10},
+      "aliases": ["hành lang b tầng 2"]
+    },
+    {
+      "id": "room_201",
+      "name": "Phòng 201",
+      "type": "room",
+      "floor": 1,
+      "coordinates": {"x": 0, "y": 20},
+      "aliases": ["phòng 201", "201"]
+    },
+    {
+      "id": "room_202",
+      "name": "Phòng 202",
+      "type": "room",
+      "floor": 1,
+      "coordinates": {"x": 10, "y": 20},
+      "aliases": ["phòng 202", "202"]
+    },
+    {
+      "id": "room_203",
+      "name": "Phòng giám đốc",
+      "type": "room",
+      "floor": 1,
+      "coordinates": {"x": 20, "y": 20},
+      "aliases": ["phòng giám đốc", "phòng 203", "203", "director"]
+    },
+    {
+      "id": "room_204",
+      "name": "Phòng họp lớn 204",
+      "type": "meeting_room",
+      "floor": 1,
+      "coordinates": {"x": 30, "y": 20},
+      "aliases": ["phòng họp lớn", "phòng 204", "204"]
+    },
+    {
+      "id": "toilet_f1",
+      "name": "Nhà vệ sinh tầng 1",
+      "type": "toilet",
+      "floor": 1,
+      "coordinates": {"x": 30, "y": 10},
+      "aliases": ["wc tầng 2", "toilet tầng 2", "nhà vệ sinh tầng 2"]
+    }
+  ],
+  "edges": [
+    {"from": "entrance", "to": "lobby_f0", "distance": 5, "bidirectional": true},
+    {"from": "lobby_f0", "to": "staircase", "distance": 10, "bidirectional": true},
+    {"from": "lobby_f0", "to": "elevator", "distance": 12, "bidirectional": true},
+    {"from": "lobby_f0", "to": "corridor_f0_a", "distance": 10, "bidirectional": true},
+    {"from": "corridor_f0_a", "to": "corridor_f0_b", "distance": 15, "bidirectional": true},
+    {"from": "corridor_f0_a", "to": "room_101", "distance": 10, "bidirectional": true},
+    {"from": "corridor_f0_a", "to": "room_102", "distance": 5, "bidirectional": true},
+    {"from": "corridor_f0_b", "to": "room_102", "distance": 8, "bidirectional": true},
+    {"from": "corridor_f0_b", "to": "room_103", "distance": 5, "bidirectional": true},
+    {"from": "corridor_f0_b", "to": "room_104", "distance": 12, "bidirectional": true},
+    {"from": "corridor_f0_b", "to": "toilet_f0", "distance": 5, "bidirectional": true},
+    {"from": "staircase", "to": "staircase_f1", "distance": 8, "bidirectional": true},
+    {"from": "elevator", "to": "elevator_f1", "distance": 6, "bidirectional": true},
+    {"from": "staircase_f1", "to": "lobby_f1", "distance": 5, "bidirectional": true},
+    {"from": "elevator_f1", "to": "lobby_f1", "distance": 4, "bidirectional": true},
+    {"from": "lobby_f1", "to": "corridor_f1_a", "distance": 10, "bidirectional": true},
+    {"from": "lobby_f1", "to": "corridor_f1_b", "distance": 8, "bidirectional": true},
+    {"from": "corridor_f1_a", "to": "corridor_f1_b", "distance": 15, "bidirectional": true},
+    {"from": "corridor_f1_a", "to": "room_201", "distance": 10, "bidirectional": true},
+    {"from": "corridor_f1_a", "to": "room_202", "distance": 5, "bidirectional": true},
+    {"from": "corridor_f1_b", "to": "room_202", "distance": 8, "bidirectional": true},
+    {"from": "corridor_f1_b", "to": "room_203", "distance": 5, "bidirectional": true},
+    {"from": "corridor_f1_b", "to": "room_204", "distance": 12, "bidirectional": true},
+    {"from": "corridor_f1_b", "to": "toilet_f1", "distance": 5, "bidirectional": true}
+  ]
+}
