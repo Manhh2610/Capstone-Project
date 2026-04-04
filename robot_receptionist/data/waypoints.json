@@ -1,0 +1,26 @@
+{
+  "waypoints": {
+    "entrance":       {"x": 0.0,  "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Lối vào chính"},
+    "lobby_f0":       {"x": 5.0,  "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Sảnh tầng trệt"},
+    "corridor_f0_a":  {"x": 5.0,  "y": 10.0, "theta": 0.0,     "frame": "map", "name": "Hành lang A T0"},
+    "corridor_f0_b":  {"x": 20.0, "y": 10.0, "theta": 0.0,     "frame": "map", "name": "Hành lang B T0"},
+    "room_101":       {"x": 0.0,  "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng 101"},
+    "room_102":       {"x": 10.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng 102"},
+    "room_103":       {"x": 20.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng 103"},
+    "room_104":       {"x": 30.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng họp 104"},
+    "toilet_f0":      {"x": 30.0, "y": 10.0, "theta": 3.1416,  "frame": "map", "name": "Nhà vệ sinh T0"},
+    "staircase":      {"x": 15.0, "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Cầu thang bộ"},
+    "elevator":       {"x": 18.0, "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Thang máy"},
+    "staircase_f1":   {"x": 15.0, "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Cầu thang T2"},
+    "elevator_f1":    {"x": 18.0, "y": 0.0,  "theta": 1.5708,  "frame": "map", "name": "Thang máy T2"},
+    "lobby_f1":       {"x": 15.0, "y": 5.0,  "theta": 1.5708,  "frame": "map", "name": "Sảnh tầng 1"},
+    "corridor_f1_a":  {"x": 5.0,  "y": 10.0, "theta": 0.0,     "frame": "map", "name": "Hành lang A T1"},
+    "corridor_f1_b":  {"x": 20.0, "y": 10.0, "theta": 0.0,     "frame": "map", "name": "Hành lang B T1"},
+    "room_201":       {"x": 0.0,  "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng 201"},
+    "room_202":       {"x": 10.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng 202"},
+    "room_203":       {"x": 20.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng giám đốc"},
+    "room_204":       {"x": 30.0, "y": 20.0, "theta": -1.5708, "frame": "map", "name": "Phòng họp lớn 204"},
+    "toilet_f1":      {"x": 30.0, "y": 10.0, "theta": 3.1416,  "frame": "map", "name": "Nhà vệ sinh T1"}
+  },
+  "_comment": "theta in radians. 0=East, π/2=North, -π/2=South, π=West. frame=map for ROS2 Nav2"
+}
