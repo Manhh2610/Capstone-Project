@@ -1,86 +1,101 @@
-import os
+"""
+Resolve room queries to room_id using Exact Match and Semantic Search (ChromaDB + sentence-transformers).
+"""
 import chromadb
-from chromadb.utils import embedding_functions
-from pathlib import Path
+from sentence_transformers import SentenceTransformer
 
 class RoomResolver:
-    def __init__(self, rooms_data: dict, persist_directory: str = "data/chroma_db"):
+    def __init__(self, rooms_data: list[dict]):
         """
-        Initialize RoomResolver with rooms data and set up ChromaDB.
-        Uses ONNX-based MiniLM-L6-V2 for efficient execution on Jetson without Torch.
+        Initialize RoomResolver with a list of room dictionaries.
+        Sets up an in-memory ChromaDB for semantic search.
         """
         self.rooms_data = rooms_data
-        self.persist_directory = persist_directory
+        self.exact_map = {}
         
-        # Ensure directory exists
-        Path(self.persist_directory).mkdir(parents=True, exist_ok=True)
+        # Build exact match map: lowercase names and aliases -> room_id
+        for room in self.rooms_data:
+            room_id = room.get("id")
+            if not room_id:
+                continue
+            
+            name = room.get("name", "").lower()
+            if name:
+                self.exact_map[name] = room_id
+                
+            for alias in room.get("aliases", []):
+                self.exact_map[alias.lower()] = room_id
+                
+        # Initialize Embedding Model using sentence-transformers
+        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
         
-        # Initialize Embedding Model (ONNX variant)
-        # This will download the model file (~80MB) on the first run.
-        # It's much lighter and more compatible with Jetson than sentence-transformers + torch.
-        self.ef = embedding_functions.ONNXMiniLM_L6_V2()
-        
-        # Initialize ChromaDB
-        self.client = chromadb.PersistentClient(path=self.persist_directory)
+        # Initialize in-memory ChromaDB
+        self.client = chromadb.EphemeralClient()
         self.collection = self.client.get_or_create_collection(
             name="rooms",
-            embedding_function=self.ef,
             metadata={"hnsw:space": "cosine"}
         )
         
-        # Index data if empty
-        if self.collection.count() == 0:
-            self._index_rooms()
+        # Index data into ChromaDB
+        self._index_rooms()
 
     def _index_rooms(self):
-        """Index all rooms from the provided dictionary into ChromaDB."""
-        nodes = self.rooms_data.get("nodes", [])
         ids = []
         documents = []
-        metadatas = []
+        embeddings = []
         
-        for node in nodes:
-            room_id = node.get("id")
-            room_name = node.get("name")
-            aliases = node.get("aliases", [])
+        for room in self.rooms_data:
+            room_id = room.get("id")
+            if not room_id:
+                continue
+                
+            room_name = room.get("name", "")
+            aliases = room.get("aliases", [])
             
-            # Combine name and aliases for embedding
-            # Example: "Phòng 101, 101"
-            search_text = f"{room_name}, {' '.join(aliases)}"
+            # Combine name and aliases
+            search_text = f"{room_name} {' '.join(aliases)}"
             
             ids.append(room_id)
             documents.append(search_text)
-            metadatas.append({"id": room_id, "name": room_name})
             
         if ids:
-            # We add data directly to collection; Chroma will use EF to embed it
+            embeddings = self.embedding_model.encode(documents).tolist()
             self.collection.add(
                 ids=ids,
                 documents=documents,
-                metadatas=metadatas
+                embeddings=embeddings
             )
 
     def resolve(self, query: str) -> str | None:
         """
-        Resolve a natural language query to a room_id.
-        Returns None if no match is found above the 0.4 threshold.
+        Resolve natural language text to a room_id.
+        1. Exact Match (lowercase)
+        2. Semantic Search (cosine similarity >= 0.5)
         """
         if not query:
             return None
-        
+            
+        # 1. Exact Match Fallback
+        q_lower = query.strip().lower()
+        if q_lower in self.exact_map:
+            return self.exact_map[q_lower]
+            
+        # 2. Semantic Search using ChromaDB
+        query_embedding = self.embedding_model.encode([query]).tolist()
         results = self.collection.query(
-            query_texts=[query],
+            query_embeddings=query_embedding,
             n_results=1
         )
         
         if not results or not results['ids'] or not results['ids'][0]:
             return None
             
-        # ChromaDB returns distances (lower is better for cosine distance)
+        # For cosine space in ChromaDB, the distance is Cosine Distance.
         # Cosine Similarity = 1 - Cosine Distance
-        # We need Cosine Similarity > 0.6, so Cosine Distance < 0.4
         distance = results['distances'][0][0]
-        if distance > 0.4:  # Similarity < 0.6
-            return None
+        similarity = 1.0 - distance
+        
+        if similarity >= 0.5:
+            return results['ids'][0][0]
             
-        return results['ids'][0][0]
+        return None

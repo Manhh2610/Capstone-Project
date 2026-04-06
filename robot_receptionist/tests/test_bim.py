@@ -1,58 +1,75 @@
 import pytest
-from fastapi.testclient import TestClient
-from bim_service import app
+import json
+from bim.graph import BIMGraph, NodeNotFoundError, NoPathError
+from bim.resolver import RoomResolver
 
-client = TestClient(app)
+# Shared fixtures
+@pytest.fixture(scope="module")
+def bim_instance():
+    return BIMGraph("data/rooms.json")
 
-def test_find_path_same_floor():
-    """Test tìm đường cùng tầng: entrance -> room_101."""
-    resp = client.post("/navigate", json={"from_id": "entrance", "to_id": "room_101"})
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["from_id"] == "entrance"
-    assert data["to_id"] == "room_101"
-    assert len(data["path"]) > 0
-    assert data["floor_changes"] == 0
+@pytest.fixture(scope="module")
+def resolver_instance(bim_instance):
+    with open("data/rooms.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return RoomResolver(data.get("nodes", []))
 
-def test_find_path_cross_floor():
-    """Test tìm đường khác tầng: entrance -> room_201 dùng elevator."""
-    resp = client.post("/navigate", json={
-        "from_id": "entrance", 
-        "to_id": "room_201", 
-        "preference": "elevator"
-    })
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["floor_changes"] >= 1
-    # Kiểm tra xem có đi qua thang máy không
-    assert any("elevator" in node for node in data["path"])
+# ── BIM Graph Tests ─────────────────────────────────────────
 
-def test_resolve_exact():
-    """Test tìm phòng khớp tên chính xác: 'Phòng 101'."""
-    resp = client.post("/resolve", json={"query": "Phòng 101"})
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["room_id"] == "room_101"
+def test_find_path_same_floor(bim_instance):
+    """Test finding a path on the same floor."""
+    result = bim_instance.find_path("entrance", "room_101")
+    assert result.from_id == "entrance"
+    assert result.to_id == "room_101"
+    assert len(result.steps) > 1
+    assert result.floor_changes == 0
 
-def test_resolve_semantic():
-    """Test tìm phòng theo ngữ nghĩa: 'phòng giám đốc' -> room_203."""
-    # Semantic match cho 'giám đốc' vì 'sếp' có thể lệch trong mô hình nhỏ
-    resp = client.post("/resolve", json={"query": "tìm giúp phòng giám đốc"})
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["room_id"] == "room_203"
+def test_find_path_cross_floor_elevator(bim_instance):
+    """Test finding a cross-floor path using the elevator."""
+    result = bim_instance.find_path("entrance", "room_201", preference="elevator")
+    assert result.to_id == "room_201"
+    # Ensure elevator is in the path
+    types = [bim_instance._nodes[node]["type"] for node in result.path]
+    assert "elevator" in types
 
-def test_node_not_found():
-    """Test lỗi khi không tìm thấy node ID."""
-    resp = client.post("/navigate", json={"from_id": "entrance", "to_id": "non_existent"})
-    assert resp.status_code == 404
-    # Sửa để khớp message tiếng Việt của BIMGraph
-    assert "không tìm thấy" in resp.json()["detail"].lower()
+def test_find_path_cross_floor_stairs(bim_instance):
+    """Test finding a cross-floor path using stairs."""
+    result = bim_instance.find_path("entrance", "room_201", preference="stairs")
+    assert result.to_id == "room_201"
+    types = [bim_instance._nodes[node]["type"] for node in result.path]
+    assert "staircase" in types
 
-def test_no_path():
-    """
-    Test lỗi khi không có đường đi hoặc không resolve được.
-    """
-    # Test resolve thất bại với chuỗi vô nghĩa vượt ngưỡng distance 0.4
-    resp = client.post("/resolve", json={"query": "không gian xanh xyz vớ vẩn"})
-    assert resp.status_code == 404
+def test_node_not_found(bim_instance):
+    """Test asking for an invalid node."""
+    with pytest.raises(NodeNotFoundError):
+        bim_instance.find_path("entrance", "invalid_node_id")
+
+def test_same_node(bim_instance):
+    """Test routing from entrance to entrance."""
+    result = bim_instance.find_path("entrance", "entrance")
+    assert result.total_distance == 0.0
+    assert len(result.steps) == 1
+    assert "Bạn đang ở đây rồi!" in result.steps[0].instruction
+
+# ── Resolver Tests ──────────────────────────────────────────
+
+def test_resolve_exact(resolver_instance):
+    """Test exact matching ignores case."""
+    room_id = resolver_instance.resolve("phòng 101")
+    assert room_id == "room_101"
+
+def test_resolve_alias(resolver_instance):
+    """Test exact matching via an alias."""
+    room_id = resolver_instance.resolve("wc")
+    assert room_id == "toilet_f0" or room_id == "toilet_f1" # Assuming one of them triggers exact match
+
+def test_resolve_semantic(resolver_instance):
+    """Test semantic search via ChromaDB."""
+    # Depends on sentence-transformers and Chromadb
+    room_id = resolver_instance.resolve("chỗ sếp làm việc")
+    assert room_id == "room_203" # "Phòng Giám đốc" -> "room_203"
+
+def test_resolve_not_found(resolver_instance):
+    """Test fallback when no node matches semantically or exactly."""
+    room_id = resolver_instance.resolve("xyz không tồn tại")
+    assert room_id is None
